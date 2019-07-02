@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>"Every accomplishment starts with the decision to try." - John F. Kennedy</title>
+
+    <link href="/static/css/style.css" rel="stylesheet">
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript">
+       $(document).ready(function() {
+
+         $("#generate-string").click(function(e) {
+           $.post("/generator", {"sqlscript": $("textarea[name='sqlscript']").val(),
+			   "commentsection": $("textarea[name='commentsection']").val(),
+			   "dbname": $("select[id='dbname']").val(),
+			   "schemaname": $("select[id='schemaname']").val(),
+			   "objname": $("input[name='objectname']").val(),
+			   "scriptname": $("input[name='scriptname']").val(),
+			   "jiratkt": $("input[name='jiraticket']").val(),
+			   "objecttype": $("select[id='objecttype']").val()
+			   })
+			   .done(function(string) {
+               $("#the-string").show();
+               $("#the-string textarea").val(string);
+            });
+           e.preventDefault();
+         });
+
+         $("#replace-string").click(function(e) {
+           $.ajax({
+              type: "PUT",
+              url: "/generator",
+              data: {"another_string": $("#the-string input").val()}
+           })
+           .done(function() {
+              alert("Replaced!");
+           });
+           e.preventDefault();
+         });
+
+         $("#delete-string").click(function(e) {
+           $.ajax({
+              type: "DELETE",
+              url: "/generator"
+           })
+           .done(function() {
+              $("#the-string").hide();
+           });
+           e.preventDefault();
+         });
+
+       });
+     </script>
+    
+    
+  </head>
+  <body>
+    <div class="container">
+    
+    <div id="script-type-area" class="section-divider clearfix">
+    <textarea class="form-control" rows="15" cols="125" placeholder="Paste the script here" name="sqlscript" required
+     data-toggle="tooltip" data-placement="bottom" title="Usage: dbo.procedurename -- paste rest of the code. Omit create/alter command, dbName"></textarea>
+    </div>
+    
+    <div id="comments-area" class="section-divider clearfix">
+    <textarea class="form-control" rows="2" cols="125" placeholder="Add comments, if any" name="commentsection"
+    data-toggle="tooltip" data-placement="bottom" title="These meaningful..?? comments go in the object code."></textarea>
+    </div>
+    
+    <div id="action-area" class="row section-divider clearfix">
+    
+    <div class="col-md-2 col-sm-3 col-xs-12 section-divider">
+    <select id="dbname" class="form-control" data-toggle="tooltip" data-placement="bottom" title="Choose database">
+		 <option value="DB1">DB1</option>
+		 <option value="DB2">DB2</option>
+		 <option value="AnotherDB">AnotherDB</option>
+		 <option value="YetAnotherDB">YetAnotherDB</option>
+     </select></div>
+     
+     
+    <div class="col-md-1 col-sm-3 col-xs-12 section-divider">
+	 <select id="schemaname" class="form-control" data-toggle="tooltip" data-placement="bottom" title="Schema Name!">
+		 <option value="DBO">DBO</option>
+     </select>
+    </div>
+    
+    
+    <div class="col-md-2 col-sm-3 col-xs-12 section-divider">
+    <input class="form-control" type="text" name="objectname" placeholder="Enter Object Name" data-toggle="tooltip" data-placement="bottom" title="Object name: e.g. myStoredRoutine"/>
+    </div>
+    
+    
+    <div class="col-md-2 col-sm-3 col-xs-12 section-divider">
+    <input class="form-control" type="text" name="scriptname" placeholder="Enter File Name" data-toggle="tooltip" data-placement="bottom" title="File name: e.g. MySqlFile.sql"/>
+    </div>
+    
+    
+    <div class="col-md-2 col-sm-3 col-xs-12 section-divider">
+    <input class="form-control" type="text" name="jiraticket" placeholder="Enter JIRA ticket" data-toggle="tooltip" data-placement="bottom" title="e.g. TKT-123"/>
+    </div>
+    
+    
+    <div class="col-md-2 col-sm-4 col-xs-12 section-divider">
+    <select id="objecttype" class="form-control" data-toggle="tooltip" data-placement="bottom" title="Choose object type">
+		 <option value="Function">Function</option>
+		 <option value="Procedure">Procedure</option>
+		 <!--<option value="Table">Table</option>
+		 <option value="Trigger">Trigger</option>-->
+     </select>
+    </div>
+    
+    
+    <div class="col-md-1 col-sm-5 col-xs-12 section-divider">
+    <button id="generate-string" class="btn btn-md btn-success btn-block">Create</button>
+    </div>
+    
+    
+    
+    </div>
+    
+    
+    <div id="the-string" class="section-divider">
+         <textarea class="form-control" rows="21" cols="125" placeholder="Look for output here" type="output" name="templatedscript"></textarea>
+     </div>
+     
+     
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    
+    <script type="text/javascript">
+    $(function () {
+	  $('[data-toggle="tooltip"]').tooltip({
+		  trigger : 'focus' })
+	})
+    </script>
+  </body>
+</html>
